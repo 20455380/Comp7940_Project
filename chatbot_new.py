@@ -3,9 +3,14 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 
 import configparser
 import logging
-import redis
+import pymongo
 
-global redis1
+
+# import redis
+
+# global redis1
+global client
+global db
 
 def main():
     # Load your token and create an Updater for your Bot
@@ -15,8 +20,12 @@ def main():
     updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
     dispatcher = updater.dispatcher
 
-    global redis1
-    redis1 = redis.Redis(host=(config['REDIS']['HOST']), password=(config['REDIS']['PASSWORD']), port=(config['REDIS']['REDISPORT']))
+    # global redis1
+    global client
+    global db
+    # redis1 = redis.Redis(host=(config['REDIS']['HOST']), password=(config['REDIS']['PASSWORD']), port=(config['REDIS']['REDISPORT']))
+    client = pymongo.MongoClient("mongodb+srv://admin:admin@cluster0-comp7940.0rbor.mongodb.net/test?retryWrites=true&w=majority")
+    db = client.test
 
     # You can set this logging module, so you will know when and why things do not work as expected
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -53,11 +62,10 @@ def help_command(update: Update, context: CallbackContext) -> None:
 def add(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
-        global redis1
+        global db
         logging.info(context.args[0])
         msg = context.args[0]   # /add keyword <-- this should store the keyword
-        redis1.incr(msg)
-        update.message.reply_text('You have said ' + msg +  ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
+        update.message.reply_text('You have said ' + msg )
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
 
