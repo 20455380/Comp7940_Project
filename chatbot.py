@@ -29,6 +29,7 @@ def main():
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("add", add))
     dispatcher.add_handler(CommandHandler("help", help_command))
+    dispatcher.add_handler(CommandHandler("location", location))
 
 
     # To start the bot:
@@ -61,6 +62,12 @@ def add(update: Update, context: CallbackContext) -> None:
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
 
+def location(update: Update, context: CallbackContext) -> None:
+    # 22.5235272  114.0001652
+    try: 
+        context.bot.send_location(chat_id=update.effective_chat.id, latitude=context.args[0], longitude=context.args[1], proximity_alert_radius=300)
+    except (IndexError, ValueError):
+        update.message.reply_text('Usage: /location <latitude> <longitude>')
 
 
 if __name__ == '__main__':
