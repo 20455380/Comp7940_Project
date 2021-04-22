@@ -29,7 +29,8 @@ def main():
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("add", add))
     dispatcher.add_handler(CommandHandler("help", help_command))
-
+    dispatcher.add_handler(CommandHandler("trackWeight", trackWeight))
+    dispatcher.add_handler(CommandHandler("retriveWeight", retriveWeight))
 
     # To start the bot:
     updater.start_polling()
@@ -60,7 +61,31 @@ def add(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('You have said ' + msg +  ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
-
+def trackWeight(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /add is issued."""
+    try: 
+        global db
+        logging.info(context.args[0])
+        weight = context.args[0]
+        date = context.argsp[1]
+        record={"weight":weight,"date":date}
+        s = db.insert_one(record)
+        #msg = context.args[0]   # /add keyword <-- this should store the keyword
+        update.message.reply_text('Your weight: ' + weight+" date:"+date )
+    except (IndexError, ValueError):
+        update.message.reply_text('Usage: /add <keyword>')
+def retriveWeight(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /add is issued."""
+    try: 
+        global db
+        logging.info(context.args[0])
+        date = context.argsp[0]
+        record={"weight":weight,"date":date}
+        s = db.find({"date":date})
+        #msg = context.args[0]   # /add keyword <-- this should store the keyword
+        update.message.reply_text('Your weight: ' + weight+" date:"+date )
+    except (IndexError, ValueError):
+        update.message.reply_text('Usage: /add <keyword>')
 
 
 if __name__ == '__main__':
