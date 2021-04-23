@@ -20,7 +20,7 @@ def main():
 
     global redis1
     redis1 = redis.Redis(host=(os.environ['HOST']), password=(os.environ['PASSWORD']), port=(os.environ['REDISPORT']))
-# ...
+    # ...
     # You can set this logging module, so you will know when and why things do not work as expected
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         level=logging.INFO)
@@ -69,6 +69,7 @@ def trackWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
         global db
+        global weight
         logging.info(context.args[0])
         weight = context.args[0]
         date = context.argsp[1]
@@ -82,6 +83,7 @@ def retriveWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
         global db
+        global weight
         logging.info(context.args[0])
         date = context.argsp[0]
         record={"weight":weight,"date":date}
@@ -91,13 +93,12 @@ def retriveWeight(update: Update, context: CallbackContext) -> None:
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
 
-+def location(update: Update, context: CallbackContext) -> None:
+def location(update: Update, context: CallbackContext) -> None:
     # 22.5235272  114.0001652
     try: 
         context.bot.send_location(chat_id=update.effective_chat.id, latitude=context.args[0], longitude=context.args[1], proximity_alert_radius=300)
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /location <latitude> <longitude>')
-
 
 if __name__ == '__main__':
     main()
