@@ -4,7 +4,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 import configparser
 import logging
 import redis
-
+# slite change
 global redis1
 
 def main():
