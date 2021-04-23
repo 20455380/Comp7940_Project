@@ -1,23 +1,26 @@
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-import configparser
+# import configparser
 import logging
 import redis
 
 global redis1
+import os
+# import configparser
 
+# ....
 def main():
     # Load your token and create an Updater for your Bot
     
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
+    # config = configparser.ConfigParser()
+    # config.read('config.ini')
+    updater = Updater(token=(os.environ['ACCESS_TOKEN']), use_context=True)
     dispatcher = updater.dispatcher
 
     global redis1
-    redis1 = redis.Redis(host=(config['REDIS']['HOST']), password=(config['REDIS']['PASSWORD']), port=(config['REDIS']['REDISPORT']))
-
+    redis1 = redis.Redis(host=(os.environ['HOST']), password=(os.environ['PASSWORD']), port=(os.environ['REDISPORT']))
+# ...
     # You can set this logging module, so you will know when and why things do not work as expected
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         level=logging.INFO)
@@ -29,8 +32,8 @@ def main():
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("add", add))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("location", location))
-
+    dispatcher.add_handler(CommandHandler("trackWeight", trackWeight))
+    dispatcher.add_handler(CommandHandler("retriveWeight", retriveWeight))
 
     # To start the bot:
     updater.start_polling()
@@ -61,13 +64,31 @@ def add(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('You have said ' + msg +  ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
-
-def location(update: Update, context: CallbackContext) -> None:
-    # 22.5235272  114.0001652
+def trackWeight(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /add is issued."""
     try: 
-        context.bot.send_location(chat_id=update.effective_chat.id, latitude=context.args[0], longitude=context.args[1], proximity_alert_radius=300)
+        global db
+        logging.info(context.args[0])
+        weight = context.args[0]
+        date = context.argsp[1]
+        record={"weight":weight,"date":date}
+        s = db.insert_one(record)
+        #msg = context.args[0]   # /add keyword <-- this should store the keyword
+        update.message.reply_text('Your weight: ' + weight+" date:"+date )
     except (IndexError, ValueError):
-        update.message.reply_text('Usage: /location <latitude> <longitude>')
+        update.message.reply_text('Usage: /add <keyword>')
+def retriveWeight(update: Update, context: CallbackContext) -> None:
+    """Send a message when the command /add is issued."""
+    try: 
+        global db
+        logging.info(context.args[0])
+        date = context.argsp[0]
+        record={"weight":weight,"date":date}
+        s = db.find({"date":date})
+        #msg = context.args[0]   # /add keyword <-- this should store the keyword
+        update.message.reply_text('Your weight: ' + weight+" date:"+date )
+    except (IndexError, ValueError):
+        update.message.reply_text('Usage: /add <keyword>')
 
 
 if __name__ == '__main__':
