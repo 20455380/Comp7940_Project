@@ -8,7 +8,11 @@ import redis
 global redis1
 import os
 # import configparser
+  
+from flask import Flask
+app = Flask(__name__)
 
+@app.route("/")
 # ....
 def main():
     # Load your token and create an Updater for your Bot
