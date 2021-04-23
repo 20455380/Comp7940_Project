@@ -1,0 +1,1 @@
+python: python chatbot_redis_by_upstash.py
