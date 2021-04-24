@@ -87,7 +87,6 @@ def retriveWeight(update: Update, context: CallbackContext) -> None:
         global redis1
         if(context.args[0]=="all"):
             result1=redis1.hgetall("weightRecord1")
-            print(x)
             update.message.reply_text('Your weight: ' +str(result1))
         else:
             date =context.args[0]
