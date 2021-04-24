@@ -69,6 +69,8 @@ def add(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('You have said ' + msg +  ' for ' + redis1.get(msg).decode('UTF-8') + ' times.')
     except (IndexError, ValueError):
         update.message.reply_text('Usage: /add <keyword>')
+
+
 def trackWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
@@ -81,6 +83,8 @@ def trackWeight(update: Update, context: CallbackContext) -> None:
         update.message.reply_text('Date:'+date+' ,Your weight: ' + weight )
     except (IndexError, ValueError):
         update.message.reply_text('Usage: wrong parameter')
+
+        
 def retriveWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
