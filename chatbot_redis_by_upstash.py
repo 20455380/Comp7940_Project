@@ -78,13 +78,13 @@ def trackWeight(update: Update, context: CallbackContext) -> None:
         logging.info(context.args[0])
         weight = context.args[0]
         date =context.args[1]
-        redis1.hmset("weightRecord1", {date: weight})
+        redis1.hset("weightRecord1", {date: weight})
         #msg = context.args[0]   # /add keyword <-- this should store the keyword
         update.message.reply_text('Date:'+date+' ,Your weight: ' + weight )
     except (IndexError, ValueError):
         update.message.reply_text('Usage: wrong parameter')
 
-        
+
 def retriveWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
