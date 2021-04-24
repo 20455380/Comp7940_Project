@@ -72,30 +72,31 @@ def add(update: Update, context: CallbackContext) -> None:
 def trackWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
-        global db
-        global weight
+        global redis1
         logging.info(context.args[0])
         weight = context.args[0]
-        date = context.argsp[1]
-        record={"weight":weight,"date":date}
-        s = db.insert_one(record)
+        date =context.args[1]
+        redis1.hmset("weightRecord1", {date: weight})
         #msg = context.args[0]   # /add keyword <-- this should store the keyword
-        update.message.reply_text('Your weight: ' + weight+" date:"+date )
+        update.message.reply_text('Date:'+date+' ,Your weight: ' + weight )
     except (IndexError, ValueError):
-        update.message.reply_text('Usage: /add <keyword>')
+        update.message.reply_text('Usage: wrong parameter')
 def retriveWeight(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /add is issued."""
     try: 
-        global db
-        global weight
-        logging.info(context.args[0])
-        date = context.argsp[0]
-        record={"weight":weight,"date":date}
-        s = db.find({"date":date})
+        global redis1
+        if(context.args[0]=="all"):
+            result1=redis1.hgetall("weightRecord1")
+            print(x)
+            update.message.reply_text('Your weight: ' +str(result1))
+        else:
+            date =context.args[0]
+            result2=redis1.hget("weightRecord1", date)
+            update.message.reply_text('Your weight: ' +str(result2) )
+        
         #msg = context.args[0]   # /add keyword <-- this should store the keyword
-        update.message.reply_text('Your weight: ' + weight+" date:"+date )
     except (IndexError, ValueError):
-        update.message.reply_text('Usage: /add <keyword>')
+        update.message.reply_text('Usage: wrong parameter')
 
 def location(update: Update, context: CallbackContext) -> None:
     # 22.5235272  114.0001652
